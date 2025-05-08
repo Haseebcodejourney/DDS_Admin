@@ -1,0 +1,56 @@
+{% if data %}
+    <table border="1" cellpadding="10" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Profile Image</th>
+                <th>Username</th>
+                <th>Job Position</th>
+                <th>Last Login</th>
+                <th>Task Name</th>
+                <th>Project Name</th>
+                <th>Total Time (min)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+                <tr>
+                    <td>
+                        <img src="{{ row.profile_image_url }}" alt="Profile" width="40" height="40"
+                             style="border-radius:50%; object-fit:cover;">
+                    </td>
+                    <td>{{ row.username }}</td>
+                    <td>{{ row.job_position }}</td>
+                    <td>{{ row.last_login }}</td>
+                    <td>{{ row.task_name }}</td>
+                    <td>{{ row.project_name }}</td>
+                    <td>{{ row.total_spent_time }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div style="margin-top: 20px; text-align: center;">
+        {% if previous_page %}
+            <a href="?page=1{{ search_query|default_if_none:''|yesno:'&search=' }}" style="margin: 0 5px;">&laquo;&laquo;</a>
+            <a href="?page={{ previous_page }}{{ search_query|default_if_none:''|yesno:'&search=' }}" style="margin: 0 5px;">&laquo;</a>
+        {% endif %}
+
+        {% for p in pagination_range %}
+            {% if p == "..." %}
+                <span style="margin: 0 5px;">...</span>
+            {% elif p == current_page %}
+                <strong style="margin: 0 5px; color: blue;">{{ p }}</strong>
+            {% else %}
+                <a href="?page={{ p }}{{ search_query|default_if_none:''|yesno:'&search=' }}" style="margin: 0 5px;">{{ p }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if next_page %}
+            <a href="?page={{ next_page }}{{ search_query|default_if_none:''|yesno:'&search=' }}" style="margin: 0 5px;">&raquo;</a>
+            <a href="?page={{ max_page }}{{ search_query|default_if_none:''|yesno:'&search=' }}" style="margin: 0 5px;">&raquo;&raquo;</a>
+        {% endif %}
+    </div>
+{% else %}
+    <p>No data available.</p>
+{% endif %}

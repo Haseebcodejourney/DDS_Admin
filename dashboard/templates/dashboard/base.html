@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DDS FocusRo V-1</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    {% block head %}{% endblock %}  <!-- ✅ Add this line here -->
+
+    <style>
+        body { display: flex; margin: 0; font-family: sans-serif; }
+        .sidebar { width: 200px; background: #222; color: white; padding: 20px; height: 100vh; }
+        .sidebar a { color: white; display: block; padding: 10px 0; text-decoration: none; }
+        .sidebar .logo { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .sidebar .logo h3 { margin: 0; font-size: 18px; }
+        .sidebar .menu-toggle { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
+        .sidebar .sidebar-menu a { display: flex; align-items: center; padding: 10px 0; }
+        .sidebar .sidebar-menu a i { margin-right: 10px; }
+        .sidebar .sidebar-item { border-radius: 5px; }
+        .main { flex: 1; padding: 20px; }
+        .logout-button {
+    display: inline-block;
+    justify-content: center;
+    background-color: #1e73ff;
+    color: white;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+    background-color: #1e73ff;
+}
+
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <h3>DDS Focus</h3>
+            <button class="menu-toggle">≡</button>
+        </div>
+
+        <div class="sidebar-menu">
+            <a href="{% url 'dashboard' %}" data-route="dashboard" class="sidebar-item">
+                <i>📊</i><span>Home</span>
+              </a>
+
+            <a href="{% url 'live_tracking' %}" data-route="live-tracking" class="sidebar-item"><i>📍</i><span>Tracking</span></a>
+            <a href="{% url 'logout' %}" class="logout-button">Logout</a>
+        </div>
+    </div>
+    
+    <div class="main">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

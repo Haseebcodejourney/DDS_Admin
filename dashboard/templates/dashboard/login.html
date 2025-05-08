@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDS Focus Login V-1</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <!-- You can add your SVG logo here -->
+        </div>
+
+        <div class="title">Sign In</div>
+
+        {% if error %}
+        <div class="alert" style="display:block">{{ error }}</div>
+        {% endif %}
+
+        <form id="login-form" method="POST" action="">
+            {% csrf_token %}
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <input type="text" name="username" class="form-control" placeholder="Username" required>
+                    <span class="input-focus-border"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <input type="password" name="password" class="form-control" placeholder="Password" required>
+                    <span class="input-focus-border"></span>
+                </div>
+            </div>
+
+            <div class="checkbox-container">
+                <input type="checkbox" id="remember-me">
+                <label for="remember-me">Remember me</label>
+            </div>
+
+            <button type="submit" class="login-button" id="login-btn">Log In</button>
+        </form>
+
+        <div class="footer">
+            <a href="#"><span class="lock-icon">🔒</span>Forgot your password?</a>
+            <a href="#">Create an account</a>
+        </div>
+    </div>
+
+    <script>
+        const inputs = document.querySelectorAll('.form-control');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => input.parentElement.classList.add('focused'));
+            input.addEventListener('blur', () => {
+                if (input.value === '') input.parentElement.classList.remove('focused');
+            });
+        });
+    </script>
+</body>
+
+</html>

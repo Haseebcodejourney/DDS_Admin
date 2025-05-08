@@ -1,0 +1,107 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block head %}
+  <link rel="stylesheet" href="{% static 'css/live_tracking.css' %}">
+{% endblock %}
+
+{% block content %}
+<h2>Live Tracking</h2>
+
+<div class="card">
+    <div class="filters-bar">
+        <div class="filters">
+            <button class="filter-btn active">All ({{ staff_data|length }})</button>
+            <button class="filter-btn">Active (5)</button>
+            <button class="filter-btn">Meeting (2)</button>
+            <button class="filter-btn">Break (1)</button>
+            <button class="filter-btn">Idle (0)</button>
+            <button class="filter-btn">Offline (0)</button>
+        </div>
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Search employees...">
+            <button class="refresh-button">REFRESH</button>
+        </div>
+    </div>
+
+    <div class="grid-container">
+        {% for row in staff_data %}
+        <div class="employee-card">
+            <div class="card-header">
+                <div class="employee-info">
+                    <img class="employee-avatar"
+                         src="{{ row.profile_image_url }}"
+                         alt="Profile"
+                         width="40" height="40"
+                         style="border-radius: 50%; object-fit: cover;">
+                    <div>
+                        <div class="employee-name">{{ row.username }}</div>
+                        <div class="employee-title">{{ row.job_position }}</div>
+                    </div>
+                </div>
+                <div class="status-icon status-active"></div>
+            </div>
+
+            <div class="screenshot-container">
+                <img src="{% static 'images/test1.jpg' %}" alt="Screenshot" class="screenshot">
+                <div class="screenshot-time">2m ago</div>
+            </div>
+
+            <div class="activity-info">
+                <div class="activity-title">{{ row.task_name }}</div>
+                <div class="activity-details">{{ row.project_name }}</div>
+                <div class="activity-metrics">
+                    <span>
+                        <div class="metric-icon">⏱️</div> {{ row.total_spent_time }} min
+                    </span>
+                    <span>
+                        <div class="metric-icon">📊</div> 90% productive
+                    </span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<!-- Elegant Pagination Bar -->
+<div class="pagination-container">
+    {% if previous_page %}
+        <a href="?page={{ previous_page }}" class="pagination-arrow" aria-label="Previous page">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </a>
+    {% else %}
+        <span class="pagination-arrow disabled" aria-label="Previous page disabled">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </span>
+    {% endif %}
+
+    {% for num in pagination_range %}
+        {% if num == "..." %}
+            <span class="pagination-ellipsis">...</span>
+        {% elif num == current_page %}
+            <span class="pagination-item active">{{ num }}</span>
+        {% else %}
+            <a href="?page={{ num }}" class="pagination-item">{{ num }}</a>
+        {% endif %}
+    {% endfor %}
+
+    {% if next_page %}
+        <a href="?page={{ next_page }}" class="pagination-arrow" aria-label="Next page">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        </a>
+    {% else %}
+        <span class="pagination-arrow disabled" aria-label="Next page disabled">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        </span>
+    {% endif %}
+</div>
+
+{% endblock %}

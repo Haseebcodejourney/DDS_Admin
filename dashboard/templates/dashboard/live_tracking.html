@@ -1,0 +1,239 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block head %}
+  <link rel="stylesheet" href="{% static 'css/live_tracking.css' %}">
+{% endblock %}
+
+{% block content %}
+<h2>Tracking</h2>
+
+<div class="card">
+    <div class="filters-bar">
+        <div class="filters">
+            <button class="filter-btn active">All ({{ staff_data|length }})</button>
+            <button class="filter-btn">Active (5)</button>
+            <button class="filter-btn">Meeting (2)</button>
+            <button class="filter-btn">Break (1)</button>
+            <button class="filter-btn">Idle (0)</button>
+            <button class="filter-btn">Offline (0)</button>
+        </div>
+
+        <!-- 🔽 Date Filter Dropdown -->
+        <div class="date-filter">
+            <select id="dateFilter" onchange="onDateFilterChange()" style="padding: 6px; border-radius: 5px;">
+                <option value="">All Time</option>
+                <option value="1" {% if request.GET.days == '1' %}selected{% endif %}>Today</option>
+                <option value="7" {% if request.GET.days == '7' %}selected{% endif %}>Last 7 Days</option>
+                <option value="15" {% if request.GET.days == '15' %}selected{% endif %}>Last 15 Days</option>
+                <option value="30" {% if request.GET.days == '30' %}selected{% endif %}>Last 30 Days</option>
+                <option value="60" {% if request.GET.days == '60' %}selected{% endif %}>Last 2 Months</option>
+                <option value="180" {% if request.GET.days == '180' %}selected{% endif %}>Last 6 Months</option>
+                <option value="365" {% if request.GET.days == '365' %}selected{% endif %}>Last 1 Year</option>
+            </select>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Search employees...">
+            <button class="refresh-button">REFRESH</button>
+        </div>
+    </div>
+
+    <div class="grid-container">
+        {% for row in staff_data %}
+        <div class="employee-card">
+            <div class="card-header">
+                <div class="employee-info">
+                    <img class="employee-avatar"
+                         src="{{ row.profile_image_url }}"
+                         alt="Profile"
+                         width="40" height="40"
+                         style="border-radius: 50%; object-fit: cover;">
+                    <div>
+                        <div class="employee-name">{{ row.username }}</div>
+                        <div class="employee-title">{{ row.job_position }}</div>
+                    </div>
+                </div>
+                <div class="status-icon status-active"></div>
+            </div>
+
+
+
+
+
+
+
+
+
+            <div class="screenshot-container">
+                {% if row.screenshot_url %}
+                    <a href="{{ row.screenshot_url }}" target="_blank">
+                        <img src="{{ row.screenshot_url }}" alt="Screenshot of {{ row.task_name }}" class="screenshot">
+                    </a>
+                    <div style="font-size: 11px; color: #aaa; margin-top: 2px;">
+                        {{ row.screenshot_name }}
+                    </div>
+                {% elif row.ai_generated_image_url %}
+                    <a href="{{ row.ai_generated_image_url }}" target="_blank">
+                        <img src="{{ row.ai_generated_image_url }}" alt="AI Screenshot of {{ row.task_name }}" class="screenshot">
+                    </a>
+                    <div style="font-size: 11px; color: #aaa; margin-top: 2px;">AI-generated</div>
+                {% else %}
+                    <img src="{% static 'images/test2.jpg' %}" alt="No Screenshot Found" class="screenshot">
+                    <div style="font-size: 11px; color: #ff7e7e; margin-top: 2px;">No Screenshot</div>
+                {% endif %}
+                <div class="screenshot-time" title="{{ row.last_update_full }}">
+                    {{ row.last_update_ago }}
+                </div>
+            </div>
+            
+            
+            
+
+
+
+
+
+
+
+
+
+            <div class="activity-info">
+                <div class="activity-title">{{ row.task_name }}</div>
+                <div class="activity-details">{{ row.project_name }}</div>
+                <div class="activity-metrics">
+                    <span>
+                        <div class="metric-icon">⏱️</div> {{ row.formatted_time }}
+
+                    </span>
+                    <span>
+                        <div class="metric-icon">📊</div> 90% productive
+                    </span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Elegant Pagination Bar -->
+<div class="pagination-container">
+    {% if previous_page %}
+        <a href="?page={{ previous_page }}&days={{ request.GET.days }}" class="pagination-arrow" aria-label="Previous page">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </a>
+    {% else %}
+        <span class="pagination-arrow disabled">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </span>
+    {% endif %}
+
+    {% for num in pagination_range %}
+        {% if num == "..." %}
+            <span class="pagination-ellipsis">...</span>
+        {% elif num == current_page %}
+            <span class="pagination-item active">{{ num }}</span>
+        {% else %}
+            <a href="?page={{ num }}&days={{ request.GET.days }}" class="pagination-item">{{ num }}</a>
+        {% endif %}
+    {% endfor %}
+
+    {% if next_page %}
+        <a href="?page={{ next_page }}&days={{ request.GET.days }}" class="pagination-arrow" aria-label="Next page">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        </a>
+    {% else %}
+        <span class="pagination-arrow disabled">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        </span>
+    {% endif %}
+</div>
+
+<!-- JS for Filter Change -->
+<script>
+function onDateFilterChange() {
+    const selected = document.getElementById("dateFilter").value;
+    const params = new URLSearchParams(window.location.search);
+    if (selected) {
+        params.set("days", selected);
+    } else {
+        params.delete("days");
+    }
+    params.set("page", 1); // Reset to first page on filter change
+    window.location.search = params.toString();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+matches.forEach((entry, index) => {
+  const btn = document.createElement("button");
+  btn.className = "search-result" + (index === 0 ? " active" : "");
+  btn.textContent = entry;
+
+  btn.addEventListener("click", function () {
+    document.querySelectorAll(".search-result").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    // Extract staff ID from button label if embedded (e.g., "Hamza Haseeb – 6")
+    const parts = entry.split("–");
+    const staffName = parts[0].trim();
+    const staffId = parts[1] ? parts[1].trim() : null;
+
+    if (!staffId) return alert("Missing Staff ID");
+
+    // 💡 Load timeline for selected user
+    fetch(`/api/user-timeline/?staffid=${staffId}`)
+      .then(res => res.json())
+      .then(data => {
+        const entriesContainer = document.querySelector(".timeline-entries");
+        entriesContainer.innerHTML = "";
+
+        (data.entries || []).forEach(entry => {
+          const div = document.createElement("div");
+          div.className = "timeline-entry";
+          div.innerHTML = `
+            <div class="timeline-marker">
+              <div class="timeline-time">${entry.start_time}</div>
+              <div class="timeline-dot"></div>
+              <div class="timeline-line"></div>
+            </div>
+            <div class="timeline-info">
+              <div class="activity-title">${entry.project_name}</div>
+              <div class="activity-details">${entry.task_name}</div>
+              <div class="activity-stats">
+                <span>${entry.duration}</span>
+                <span>${entry.activity_type || "—"}</span>
+              </div>
+            </div>
+          `;
+          entriesContainer.appendChild(div);
+        });
+      });
+  });
+
+  searchResultsContainer.appendChild(btn);
+});
+
+
+</script>
+
+{% endblock %}
