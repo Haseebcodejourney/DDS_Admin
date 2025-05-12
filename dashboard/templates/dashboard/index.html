@@ -1,0 +1,222 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block head %}
+  <link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="status-cards">
+  <!-- CURRENT STATUS CARD -->
+
+
+
+
+  <div class="card status-card">
+    <div class="card-header">
+      <div class="card-title"><i>📊</i><span>CURRENT STATUS</span></div>
+    </div>
+    <div class="status-content">
+      <div class="status-chart">
+        <svg width="150" height="150" viewBox="0 0 150 150">
+          <circle cx="75" cy="75" r="60" fill="none" stroke="#333" stroke-width="10" />
+          <circle cx="75" cy="75" r="60" fill="none" stroke="#1e73ff" stroke-width="10"
+                  stroke-dasharray="{{ status_counts.at_work|default:0|add:status_counts.in_meeting|default:0|add:status_counts.at_break|default:0|add:status_counts.idle|default:0|add:status_counts.off|default:0 }} 315"
+                  stroke-dashoffset="-45" />
+        </svg>
+        <div class="chart-value">{{ status_counts.at_work }}</div>
+      </div>
+      <div class="status-list">
+        <div class="status-item"><div class="status-item-color" style="background-color: #2ecc71;"></div><span>{{ status_counts.at_work }} At Work</span></div>
+        <div class="status-item"><div class="status-item-color" style="background-color: #3498db;"></div><span>{{ status_counts.in_meeting }} In Meeting</span></div>
+        <div class="status-item"><div class="status-item-color" style="background-color: #f39c12;"></div><span>{{ status_counts.at_break }} At Break</span></div>
+        <div class="status-item"><div class="status-item-color" style="background-color: #e74c3c;"></div><span>{{ status_counts.idle }} Idle</span></div>
+        <div class="status-item"><div class="status-item-color" style="background-color: #95a5a6;"></div><span>{{ status_counts.off }} Off</span></div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+  
+
+  <!-- COMPANY AVERAGE CARD -->
+  <div class="card status-card">
+    <div class="card-header">
+      <div class="card-title"><i>🏢</i><span>COMPANY AVERAGE</span></div>
+      <button class="date-picker">{{ current_date }}</button>
+    </div>
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-icon">⏱️</div>
+        <div class="metric-value">{{ company_avg.breaks_per_day }}</div>
+        <div class="metric-label">DAILY BREAKS 30 D AVG</div>
+        <div class="metric-sub">Avg {{ company_avg.avg_break_duration }} Minutes/Break</div>
+      </div>
+      <div class="metric">
+        <div class="metric-icon">👥</div>
+        <div class="metric-value">{{ company_avg.meetings_per_day }}</div>
+        <div class="metric-label">MEETINGS 30 D AVG</div>
+        <div class="metric-sub">Avg {{ company_avg.avg_meeting_duration }} Minutes/Meeting</div>
+      </div>
+      <div class="metric">
+        <div class="metric-icon">⚖️</div>
+        <div class="metric-label">WORK TIME SPREAD</div>
+        <div class="spread-values">
+          <div class="spread-value"><div class="spread-percent work-value">{{ company_avg.spread.work }}%</div><div class="metric-sub">At Work</div></div>
+          <div class="spread-value"><div class="spread-percent meeting-value">{{ company_avg.spread.meeting }}%</div><div class="metric-sub">Meetings</div></div>
+          <div class="spread-value"><div class="spread-percent break-value">{{ company_avg.spread.break }}%</div><div class="metric-sub">Breaks</div></div>
+          <div class="spread-value"><div class="spread-percent idle-value">{{ company_avg.spread.idle }}%</div><div class="metric-sub">Idle</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TIMELINE SECTION -->
+<div class="timeline-section card">
+  <div class="timeline-header">
+    <div class="card-title"><span>Focus Timeline V-1</span><i>ℹ️</i></div>
+    <div class="timeline-date-selector">
+      {% for date in available_dates %}
+        <button class="date-button {% if date == selected_date %}active{% endif %}">{{ date }}</button>
+      {% endfor %}
+      <button class="refresh-button">REFRESH</button>
+    </div>
+  </div>
+
+
+
+<div class="screenshots">
+  {% for screenshot in screenshots %}
+    <div class="screenshot">
+      {% if screenshot.url %}
+      {% load static %}
+
+      <img src="{% static 'images/test2.jpg' %}" alt="Fallback Screenshot">
+      
+      {% else %}
+      {% load static %}
+
+      <img src="{% static 'images/test2.jpg' %}" alt="Fallback Screenshot">
+      
+      {% endif %}
+      <div class="screenshot-time">{{ screenshot.time }}</div>
+    </div>
+  {% endfor %}
+
+
+
+
+
+
+
+
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<!-- SEARCH AND DETAILED TIMELINE -->
+<div class="search-timeline">
+  <div class="card search-card">
+    <input type="text" class="search-input" placeholder="Search employees...">
+    <div class="search-results"></div>
+  </div>
+
+  <div class="card detailed-timeline">
+    <div class="timeline-header">
+      <h3>Focus Timeline</h3>
+      <div class="timeline-stats">
+        <div class="timeline-stat"><div class="stat-value">{{ timeline_stats.total_switches }}</div><div class="stat-label">Switches</div></div>
+        <div class="timeline-stat"><div class="stat-value">{{ timeline_stats.total_duration }}</div><div class="stat-label">Duration</div></div>
+      </div>
+      <button class="refresh-button">EXPORT CSV</button>
+    </div>
+
+    <table class="timeline-table">
+      <thead><tr><th>Start</th><th>Project</th><th>Task</th><th>Duration</th><th>Score</th><th>Activity</th></tr></thead>
+      <tbody></tbody> <!-- Placeholder tbody to be filled by JS -->
+    </table>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const searchInput = document.querySelector(".search-input");
+  const searchResultsContainer = document.querySelector(".search-results");
+
+  function updateResults(query = "") {
+    searchResultsContainer.innerHTML = "Loading...";
+    fetch(`/search-employee-names/?q=${encodeURIComponent(query)}`)
+      .then(res => res.json())
+      .then(data => {
+        const matches = data.matches || [];
+        searchResultsContainer.innerHTML = "";
+
+        matches.forEach((entry, index) => {
+          const btn = document.createElement("button");
+          btn.className = "search-result" + (index === 0 ? " active" : "");
+          btn.textContent = entry;
+
+          btn.addEventListener("click", function () {
+            document.querySelectorAll(".search-result").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+
+            const parts = entry.split("–");
+            const staffId = parts[1] ? parts[1].trim() : null;
+            if (!staffId) return;
+
+            fetch(`/api/user-timeline/?staffid=${staffId}`)
+              .then(res => res.json())
+              .then(data => {
+                const table = document.querySelector(".timeline-table");
+                let tbody = table.querySelector("tbody");
+                if (tbody) tbody.remove(); // Clear old data
+
+                tbody = document.createElement("tbody");
+
+                (data.entries || []).forEach(entry => {
+                  const tr = document.createElement("tr");
+                  tr.innerHTML = `
+                    <td>${entry.start_time}</td>
+                    <td>${entry.project_name}</td>
+                    <td>${entry.task_name}</td>
+                    <td>${entry.duration}</td>
+                    <td>${entry.score || "—"}</td>
+                    <td>${entry.activity_type || "—"}</td>
+                  `;
+                  tbody.appendChild(tr);
+                });
+
+                table.appendChild(tbody);
+              });
+          });
+
+          searchResultsContainer.appendChild(btn);
+        });
+      });
+  }
+
+  updateResults(); // Load default suggestions
+  searchInput.addEventListener("input", function () {
+    updateResults(this.value.trim());
+  });
+});
+</script>
+{% endblock %}
