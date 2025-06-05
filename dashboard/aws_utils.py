@@ -9,8 +9,6 @@ def clean_for_s3(name):
     name = name.replace(" ", "").replace(".", "").lower()
     return re.sub(r"[^a-z0-9]", "", name)
 
-<<<<<<< HEAD
-=======
 
 
 
@@ -20,7 +18,6 @@ def clean_for_s3(name):
 
 
 
->>>>>>> e5c64bf8a42282904ea76d2726122b8d9fb227af
 def get_latest_screenshot_url(email, task_name):
     s3 = boto3.client("s3",
                       aws_access_key_id="AKIARSU6EUUWMQ5I2JWC",

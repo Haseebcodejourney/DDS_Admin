@@ -50,11 +50,7 @@ def get_all_screenshot_paths():
                     quote(task) + "/" +
                     quote(image_files[0])
                 )
-<<<<<<< HEAD
-                print(f"[🖼️] Screenshot mapped → Email: {email} | Task: {task} | URL: GET {path}")
-=======
                 # print(f"[🖼️] Screenshot mapped → Email: {email} | Task: {task} | URL: GET {path}")
->>>>>>> e5c64bf8a42282904ea76d2726122b8d9fb227af
                 screenshot_map[(email.lower(), task.lower())] = path
 
     return screenshot_map
@@ -173,11 +169,7 @@ def fetch_staff_data(offset=0, limit=8, search_query="", days_filter=""):
 
                 for (email_key, task_key), path in screenshots_lookup.items():
                     if email_key.startswith(result['email'].split('@')[0]) and task_key == result['task_name'].lower():
-<<<<<<< HEAD
-                        print(f"[🖼️] Screenshot mapped → Email: {result['email']} | Task: {result['task_name']} | Path: {path}")
-=======
                         # print(f"[🖼️] Screenshot mapped → Email: {result['email']} | Task: {result['task_name']} | Path: {path}")
->>>>>>> e5c64bf8a42282904ea76d2726122b8d9fb227af
                         result['screenshot_url'] = path
                         break
 

@@ -10,12 +10,8 @@ from urllib.parse import quote
 import os
 from pathlib import Path
 from dashboard.utils import fetch_staff_data
-<<<<<<< HEAD
-from .ai_helpers import normalize_task_name_with_ai, get_latest_screenshot_paths
-=======
 from .ai_helpers import normalize_task_name_with_ai, get_all_screenshot_paths
 
->>>>>>> e5c64bf8a42282904ea76d2726122b8d9fb227af
 from .ai_search_helpers import ai_fuzzy_match_employees, generate_user_timeline_data
 from dashboard.utils import fetch_all_employees
 from django.views.decorators.http import require_GET
@@ -98,11 +94,8 @@ def api_data_view(request):
 
 @login_required
 def live_tracking(request):
-<<<<<<< HEAD
-=======
     print("✅ live_tracking view accessed")
 
->>>>>>> e5c64bf8a42282904ea76d2726122b8d9fb227af
     def format_minutes_or_hours(minutes):
         if minutes < 1:
             return f"{round(minutes * 60)}s"
@@ -142,8 +135,6 @@ def live_tracking(request):
         except Exception:
             row["last_update_ago"] = "Unknown"
 
-<<<<<<< HEAD
-=======
 
 
 
@@ -156,7 +147,6 @@ def live_tracking(request):
 
 
 
->>>>>>> e5c64bf8a42282904ea76d2726122b8d9fb227af
         email = row.get("email", "")
         task = row.get("task_name", "")
         safe_task = normalize_task_name_with_ai(task)
@@ -178,10 +168,7 @@ def live_tracking(request):
         else:
             row["screenshot_url"] = ""
             row["screenshot_name"] = ""
-<<<<<<< HEAD
-=======
             
->>>>>>> e5c64bf8a42282904ea76d2726122b8d9fb227af
 
     total_count = staff_data['total']
     items = staff_data['items']
@@ -365,18 +352,10 @@ def user_timeline_view(request):
     if not staffid:
         return JsonResponse({"error": "Missing staffid parameter"}, status=400)
 
-<<<<<<< HEAD
-    print(f"[DEBUG] Staff ID received: {staffid}")
-=======
->>>>>>> e5c64bf8a42282904ea76d2726122b8d9fb227af
     try:
         timeline_entries = get_user_timelines_by_staffid(staffid)
         return JsonResponse({"entries": timeline_entries}, safe=False)
     except Exception as e:
-<<<<<<< HEAD
-        print(f"[❌ Error in user_timeline_view] {e}")
-        return JsonResponse({"error": str(e)}, status=500)
-=======
         return JsonResponse({"error": str(e)}, status=500)
 
 from .ai_helpers import get_all_screenshot_paths
@@ -395,4 +374,3 @@ def live_tracking_view(request):
         staff['screenshots'] = screenshot_map.get(key, [])
 
     return render(request, 'dashboard/live_tracking.html', {'staff_data': staff_data})
->>>>>>> e5c64bf8a42282904ea76d2726122b8d9fb227af
